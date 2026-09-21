@@ -11,10 +11,11 @@ const AdminConfirmation = ({ confirmApi }: { confirmApi: () => Promise<void> }) 
 
     await confirmApi();
     setAdminConfirmation(false);
+    setPasswordConfirmation('');
   };
 
   return (
-    <div className="fixed inset-0 z-99 flex items-center justify-center bg-black/20 p-4 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-999 flex items-center justify-center bg-black/20 p-4 backdrop-blur-[2px]">
       <div className="w-full max-w-sm overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">

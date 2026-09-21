@@ -174,7 +174,7 @@ export const addNewInterns = async (req, res) => {
       });
     }
 
-    const isMatch = bcrypt.compare(passwordConfirmation, isAdminLogin.rows[0].password);
+    const isMatch = await bcrypt.compare(passwordConfirmation, isAdminLogin.rows[0].password);
     
     if (!isMatch) {
       return res.status(401).json({ message: 'Error, invalid password.' });
@@ -234,8 +234,32 @@ export const addNewInterns = async (req, res) => {
 
 export const editIntern = async (req, res) => {
   try {
-    const { firstName, lastName, schoolName, requiredHours, startedAt } = req.body;
+    const { firstName, lastName, schoolName, requiredHours, startedAt, passwordConfirmation } = req.body;
     const { id: internId } = req.query;
+    const adminId = req.admin.id;
+
+    const isAdminLogin = await query(
+      `SELECT 
+        public_id, name, 
+        username, role,
+        company_site, password 
+      FROM admins
+      WHERE public_id = $1`,
+      [adminId]
+    );
+
+    if (isAdminLogin.rows.length === 0) {
+      return res.status(401).json({
+        message: 'Admin session is invalid or has expired.'
+      });
+    }
+
+    const isMatch = await bcrypt.compare(passwordConfirmation, isAdminLogin.rows[0].password);
+    
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Error, invalid password.' });
+    }
+
 
     const isInternExists = await query(
       `SELECT first_name, last_name, company_site FROM interns

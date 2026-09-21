@@ -16,12 +16,6 @@ const AdminProvider = ({ children }: Props) => {
   const [companySite, setCompanySite] = useState<string>('');
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
 
-  // const [updateFirstName, setUpdateFirstName] = useState<string>('');
-  // const [updateLastName, setUpdateLastName] = useState<string>('');
-  // const [updateSchoolName, setUpdateSchoolName] = useState<string>('');
-  // const [updateRequiredHours, setUpdateRequiredHours] = useState<number>(0);
-  // const [updateStartedAt, setUpdateStartedAt] = useState<string>('');
-
   const [adminConfirmation, setAdminConfirmation] = useState(false);
 
   const loginAdmin = async ({ username, password }: LoginType) => {

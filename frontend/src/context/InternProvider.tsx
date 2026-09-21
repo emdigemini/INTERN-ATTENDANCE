@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { InternContext } from "./InternContext";
-import type { Props, InternType, SiteListType, InternWithPagination, DropdownListType, InternStatsType, PhotoDataType, AttendanceStatusType } from "..";
+import type { Props, EditInternType, InternType, SiteListType, InternWithPagination, DropdownListType, InternStatsType, PhotoDataType, AttendanceStatusType } from "..";
 import { based_url } from '../axios.ts';
 import { useAdminContext } from "./AdminContext.tsx";
 import toast from "react-hot-toast";
@@ -17,6 +17,7 @@ const InternProvider = ({ children }: Props) => {
   
   const [photo, setPhoto] = useState<PhotoDataType | null>(null);
   const [attendanceStatus, setAttendanceStatus] = useState<AttendanceStatusType | 'time_in'>('time_in');
+  const [editIntern, setEditIntern] = useState<EditInternType | null>(null);
   
   const handleInternSelect = ({ id, name }: DropdownListType) => {
     setSelectedIntern({ id, name });
@@ -156,6 +157,7 @@ const InternProvider = ({ children }: Props) => {
       internStats, photo, setIsLoading, fetchAllInterns, 
       selectSite, fetchUnfinishedInterns, timeIn, timeOut,
       handleInternSelect, setPhoto, attendanceStatus,
+      editIntern, setEditIntern,
     }}>
       { children }
     </InternContext.Provider>

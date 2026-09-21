@@ -9,13 +9,14 @@ import { based_url } from '../../../axios';
 import toast from 'react-hot-toast';
 import IsLoading from '../../IsLoading';
 import type { EditInternType } from '../../..';
+import AdminConfirmation from '../AdminConfirmation';
+import { isAxiosError } from 'axios';
 
 const InternList = () => {
   const { admin } = useAdminContext();
-  const { allInterns, isLoading, setIsLoading, fetchAllInterns } = useInternContext();
+  const { allInterns, isLoading, editIntern, setEditIntern } = useInternContext();
   const [search, setSearch] = useState<string>(''); 
   const [isEdit, setIsEdit] = useState(false);
-  const [editIntern, setEditIntern] = useState<EditInternType | null>(null);
 
   const filteredList = useMemo(() => {
     return allInterns?.interns.filter((item) =>
@@ -23,35 +24,6 @@ const InternList = () => {
       item.last_name.toLowerCase().includes(search)
     );
   }, [allInterns, search]);
-
-  const saveEditedIntern = async ({
-    firstName,
-    lastName,
-    schoolName,
-    requiredHours,
-    startedAt,
-  }: {
-    firstName?: string;
-    lastName?: string;
-    schoolName?: string;
-    requiredHours?: number;
-    startedAt?: string;
-  }) => {
-    setIsLoading(true);
-    try {
-      const res = await based_url.patch(`/admin_cnx/edit-intern?id=${editIntern?.internId}`,
-        {firstName, lastName, schoolName, requiredHours, startedAt}
-      );
-      await fetchAllInterns();
-      toast.success(res.data.message);
-    } catch (err: unknown) {
-      console.log(err);
-    } finally {
-      setIsLoading(false);
-      setEditIntern(null);
-      setIsEdit(false);
-    }
-  }
 
   return (
     <>
@@ -64,7 +36,6 @@ const InternList = () => {
         <EditIntern
           closeEdit={() => setIsEdit(false)}
           editIntern={editIntern}
-          saveEditedIntern={saveEditedIntern}
         />
       }
       <section className="h-full rounded-lg bg-white shadow-sm">
@@ -235,199 +206,216 @@ const InternListItem = ({
 };
 
 const EditIntern = (
-  { closeEdit, editIntern, saveEditedIntern }
-  : { closeEdit: () => void, editIntern: EditInternType,
-    saveEditedIntern: ({
-    firstName,
-    lastName,
-    schoolName,
-    requiredHours,
-    startedAt,
-  }: {
-    firstName?: string;
-    lastName?: string;
-    schoolName?: string;
-    requiredHours?: number;
-    startedAt?: string;
-  }) => Promise<void>}
+  { closeEdit, editIntern }
+  : { closeEdit: () => void, editIntern: EditInternType}
 ) => {
+  const { adminConfirmation, setAdminConfirmation, passwordConfirmation } = useAdminContext();
+  const { setIsLoading, fetchAllInterns, setEditIntern } = useInternContext();
   const [firstName, setFirstName] = useState<string>(editIntern.firstName);
   const [lastName, setLastName] = useState<string>(editIntern.lastName);
   const [schoolName, setSchoolName] = useState<string>(editIntern.schoolName);
   const [requiredHours, setRequiredHours] = useState<number>(editIntern.requiredHours);
   const [startedAt, setStartedAt] = useState<string>(editIntern.startedAt);
+  const date = new Date(startedAt);
+  const formatted = date.toLocaleDateString("en-CA", {
+    timeZone: "Asia/Manila",
+  });
+  const saveEditedIntern = async () => {
+    setIsLoading(true);
+    try {
+      const res = await based_url.patch(`/admin_cnx/edit-intern?id=${editIntern?.internId}`,
+        {firstName, lastName, schoolName, requiredHours, startedAt, passwordConfirmation}
+      );
+      await fetchAllInterns();
+      toast.success(res.data.message);
+    } catch (err: unknown) {
+      console.log(err);
+      if (isAxiosError(err)) {
+        toast.error(err.response?.data?.message || "Something went wrong.");
+      }
+    } finally {
+      setIsLoading(false);
+      setEditIntern(null);
+      closeEdit();
+    }
+  }
   
   return (
-    <div className="fixed inset-0 z-999 flex items-center justify-center bg-black/20 p-4 backdrop-blur-[2px]"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          closeEdit();
-        }
-      }}
-    >
-      <div className="w-full max-w-md overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-        
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-          <div>
-            <h2 className="text-sm font-semibold text-gray-900">
-              Edit Intern
-            </h2>
-            <p className="mt-0.5 text-xs text-gray-500">
-              Update intern information
-            </p>
+    <>
+      {adminConfirmation && (
+        <AdminConfirmation 
+          confirmApi={() => saveEditedIntern()}
+        />
+      )}
+      <div className="fixed inset-0 z-99 flex items-center justify-center bg-black/20 p-4 backdrop-blur-[2px]"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            closeEdit();
+          }
+        }}
+      >
+        <div className="w-full max-w-md overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+          
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">
+                Edit Intern
+              </h2>
+              <p className="mt-0.5 text-xs text-gray-500">
+                Update intern information
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={closeEdit}
+              className="flex h-7 w-7 items-center justify-center rounded-md cursor-pointer text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+            >
+              <X size={16} />
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={closeEdit}
-            className="flex h-7 w-7 items-center justify-center rounded-md cursor-pointer text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
-          >
-            <X size={16} />
-          </button>
-        </div>
+          {/* Form */}
+          <div className="space-y-4 p-5">
 
-        {/* Form */}
-        <div className="space-y-4 p-5">
+            {/* Name */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-700">
+                  First Name
+                </label>
 
-          {/* Name */}
-          <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  value={firstName}
+                  className="
+                    w-full rounded-lg border border-gray-200
+                    px-3 py-2 text-sm text-gray-900
+                    outline-none transition
+                    placeholder:text-gray-400
+                    focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10
+                  "
+                  onChange={(e) => setFirstName(e.target.value.trim())}
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-700">
+                  Last Name
+                </label>
+
+                <input
+                  type="text"
+                  value={lastName}
+                  className="
+                    w-full rounded-lg border border-gray-200
+                    px-3 py-2 text-sm text-gray-900
+                    outline-none transition
+                    focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10
+                  "
+                  onChange={(e) => setLastName(e.target.value.trim())}
+                />
+              </div>
+            </div>
+
+            {/* School */}
             <div>
               <label className="mb-1.5 block text-xs font-medium text-gray-700">
-                First Name
+                School
               </label>
 
               <input
                 type="text"
-                value={firstName}
+                value={schoolName}
                 className="
                   w-full rounded-lg border border-gray-200
                   px-3 py-2 text-sm text-gray-900
                   outline-none transition
-                  placeholder:text-gray-400
                   focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10
                 "
-                onChange={(e) => setFirstName(e.target.value.trim())}
+                onChange={(e) => setSchoolName(e.target.value.trim())}
               />
             </div>
 
+            {/* Required Hours */}
             <div>
               <label className="mb-1.5 block text-xs font-medium text-gray-700">
-                Last Name
+                Required Hours
+              </label>
+
+              <div className="relative">
+                <input
+                  type="number"
+                  min={180}
+                  value={requiredHours}
+                  className="
+                    w-full rounded-lg border border-gray-200
+                    px-3 py-2 pr-14 text-sm text-gray-900
+                    outline-none transition
+                    focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10
+                  "
+                  onChange={(e) => setRequiredHours(Number(e.target.value))}
+                />
+
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                  hours
+                </span>
+              </div>
+            </div>
+
+            {/* Start Date */}
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-gray-700">
+                Start Date
               </label>
 
               <input
-                type="text"
-                value={lastName}
+                type="date"
+                value={formatted}
                 className="
                   w-full rounded-lg border border-gray-200
                   px-3 py-2 text-sm text-gray-900
                   outline-none transition
                   focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10
                 "
-                onChange={(e) => setLastName(e.target.value.trim())}
+                onChange={(e) => setStartedAt(e.target.value)}
               />
             </div>
           </div>
 
-          {/* School */}
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-gray-700">
-              School
-            </label>
-
-            <input
-              type="text"
-              value={schoolName}
+          {/* Footer */}
+          <div className="flex justify-end gap-2 border-t border-gray-100 bg-gray-50/50 px-5 py-3">
+            <button
+              type="button"
+              onClick={closeEdit}
               className="
-                w-full rounded-lg border border-gray-200
-                px-3 py-2 text-sm text-gray-900
-                outline-none transition
-                focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10
+                rounded-lg px-4 py-2
+                text-sm font-medium text-gray-600
+                cursor-pointer transition-colors
+                hover:bg-gray-100 hover:text-gray-900
               "
-              onChange={(e) => setSchoolName(e.target.value.trim())}
-            />
-          </div>
+            >
+              Cancel
+            </button>
 
-          {/* Required Hours */}
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-gray-700">
-              Required Hours
-            </label>
-
-            <div className="relative">
-              <input
-                type="number"
-                min={180}
-                value={requiredHours}
-                className="
-                  w-full rounded-lg border border-gray-200
-                  px-3 py-2 pr-14 text-sm text-gray-900
-                  outline-none transition
-                  focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10
-                "
-                onChange={(e) => setRequiredHours(Number(e.target.value))}
-              />
-
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                hours
-              </span>
-            </div>
-          </div>
-
-          {/* Start Date */}
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-gray-700">
-              Start Date
-            </label>
-
-            <input
-              type="date"
-              value={startedAt}
+            <button
+              type="button"
               className="
-                w-full rounded-lg border border-gray-200
-                px-3 py-2 text-sm text-gray-900
-                outline-none transition
-                focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10
+                rounded-lg bg-purple-700 px-4 py-2
+                text-sm font-medium text-white
+                cursor-pointer transition-colors
+                hover:bg-purple-800
+                active:scale-[0.98]
               "
-              onChange={(e) => setStartedAt(e.target.value)}
-            />
+              onClick={() => setAdminConfirmation(true)}
+            >
+              Save Changes
+            </button>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="flex justify-end gap-2 border-t border-gray-100 bg-gray-50/50 px-5 py-3">
-          <button
-            type="button"
-            onClick={closeEdit}
-            className="
-              rounded-lg px-4 py-2
-              text-sm font-medium text-gray-600
-              cursor-pointer transition-colors
-              hover:bg-gray-100 hover:text-gray-900
-            "
-          >
-            Cancel
-          </button>
-
-          <button
-            type="button"
-            className="
-              rounded-lg bg-purple-700 px-4 py-2
-              text-sm font-medium text-white
-              cursor-pointer transition-colors
-              hover:bg-purple-800
-              active:scale-[0.98]
-            "
-            onClick={() => {
-              saveEditedIntern({ firstName, lastName, schoolName, requiredHours, startedAt });
-            }}
-          >
-            Save Changes
-          </button>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

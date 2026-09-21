@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { InternType, SiteListType, InternWithPagination, DropdownListType, InternStatsType, PhotoDataType, AttendanceStatusType } from "..";
+import type { InternType, SiteListType, InternWithPagination, DropdownListType, InternStatsType, PhotoDataType, AttendanceStatusType, EditInternType } from "..";
 
 type InternContextType = {
   isLoading: boolean;
@@ -17,6 +17,8 @@ type InternContextType = {
   selectSite: (site: SiteListType) => void;
   fetchUnfinishedInterns: () => Promise<void>;
   handleInternSelect: (value: { id: string; name: string }) => void;
+  editIntern: EditInternType | null;
+  setEditIntern: React.Dispatch<React.SetStateAction<EditInternType | null>>;
 }
 
 export const InternContext = createContext<InternContextType | undefined>(undefined);
