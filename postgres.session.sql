@@ -1,0 +1,41 @@
+-- CREATE TYPE site_list AS ENUM ('exxa', 'terra', 'giga', 'gbf');
+-- CREATE TABLE IF NOT EXISTS interns (
+--   id SERIAL PRIMARY KEY,
+--   intern_id UUID DEFAULT gen_random_uuid() UNIQUE,
+--   first_name VARCHAR(255) NOT NULL,
+--   last_name VARCHAR(255) NOT NULL,
+--   school_name VARCHAR(255) NOT NULL,
+--   required_hours INTEGER NOT NULL CHECK (required_hours >= 0),
+--   completed_hours INTEGER NOT NULL DEFAULT 0 CHECK (completed_hours >= 0),
+--   company_site site_list NOT NULL,
+--   started_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- );
+
+-- ALTER TABLE interns
+-- ALTER COLUMN completed_hours TYPE NUMERIC(10,2);
+
+-- CREATE TABLE IF NOT EXISTS attendance (
+--   id SERIAL PRIMARY KEY,
+--   intern_id UUID NOT NULL REFERENCES interns(intern_id) ON DELETE CASCADE,
+--   time_in_url VARCHAR(355),
+--   time_out_url VARCHAR(355),
+--   time_in TIMESTAMPTZ,
+--   time_out TIMESTAMPTZ
+-- );
+
+-- CREATE TYPE admin_type AS ENUM ('super_admin', 'admin');
+-- CREATE TABLE IF NOT EXISTS admins (
+--   id SERIAL PRIMARY KEY,
+--   public_id UUID DEFAULT gen_random_uuid() UNIQUE,
+--   name VARCHAR(255) NOT NULL,
+--   username VARCHAR(255) NOT NULL,
+--   email VARCHAR(255) NOT NULL UNIQUE
+--     CHECK (
+--       email ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'
+--     ),
+--   role admin_type NOT NULL DEFAULT 'admin',
+--   company_site site_list NOT NULL,
+--   password VARCHAR(255) NOT NULL
+-- );
+
+-- DROP TABLE IF EXISTS admins CASCADE;
