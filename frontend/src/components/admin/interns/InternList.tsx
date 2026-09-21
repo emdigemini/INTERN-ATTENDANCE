@@ -210,7 +210,7 @@ const EditIntern = (
   : { closeEdit: () => void, editIntern: EditInternType}
 ) => {
   const { adminConfirmation, setAdminConfirmation, passwordConfirmation } = useAdminContext();
-  const { setIsLoading, fetchAllInterns, setEditIntern } = useInternContext();
+  const { setIsLoading, fetchAllInterns } = useInternContext();
   const [firstName, setFirstName] = useState<string>(editIntern.firstName);
   const [lastName, setLastName] = useState<string>(editIntern.lastName);
   const [schoolName, setSchoolName] = useState<string>(editIntern.schoolName);
@@ -227,6 +227,7 @@ const EditIntern = (
         {firstName, lastName, schoolName, requiredHours, startedAt, passwordConfirmation}
       );
       await fetchAllInterns();
+      closeEdit();
       toast.success(res.data.message);
     } catch (err: unknown) {
       console.log(err);
@@ -235,8 +236,6 @@ const EditIntern = (
       }
     } finally {
       setIsLoading(false);
-      setEditIntern(null);
-      closeEdit();
     }
   }
   
