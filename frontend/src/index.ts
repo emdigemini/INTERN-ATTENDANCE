@@ -23,6 +23,15 @@ export type NewInternFormType = {
   companySite: string | null;
 }
 
+export type EditInternType = {
+  internId: string;
+  firstName: string;
+  lastName: string;
+  schoolName: string;
+  requiredHours: number;
+  startedAt: string;
+}
+
 export interface InternType {
   intern_id: string;
   first_name: string;
@@ -69,4 +78,14 @@ export type PhotoDataType = {
 
 export type AttendanceStatusType = {
   status: "time_in" | "time_out";
+}
+
+export interface AttendanceDataType {
+  intern_id: string;
+  first_name: string;
+  last_name: string;
+  required_hours: number | string;
+  completed_hours: number | string;
+  time_in: Date | string;
+  time_out: Date | string;
 }

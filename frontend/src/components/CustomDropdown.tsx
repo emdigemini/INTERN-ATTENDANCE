@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useMemo } from "react";
+import { useState } from "react";
 import { pascalCase } from "../utils";
 import type { DropdownListType } from "..";
 
@@ -18,17 +18,23 @@ const CustomDropdown = ({
   isOpen,
   openDropdown,
 }: CustomDropdownProps) => {
+  const [filteredList, setFilteredList] = useState(listValue); 
   const isSelected = listValue.some(
-    (item) => item.name.toLowerCase() === selectedList?.toLowerCase()
+    (item) =>
+      item.name.toLowerCase() === selectedList?.trim().toLowerCase()
   );
 
-  const filteredList = useMemo(() => {
-    const value = selectedList?.trim().toLowerCase() ?? '';
+  const handleSearch = (value: string) => {
+    const search = value.trim().toLowerCase();
 
-    return listValue.filter((item) =>
-      item.name.toLowerCase().includes(value)
+    const result = listValue.filter((intern) =>
+      intern.name.toLowerCase().includes(search)
     );
-  }, [listValue, selectedList]);
+    if (result.length > 0 && result[0].name.toLowerCase() === search) {
+      selectList({ id: result[0].id, name: result[0].name });
+    }
+    setFilteredList(result);
+  };
 
   return (
     <div className="relative w-full">
@@ -87,14 +93,15 @@ const CustomDropdown = ({
         ) : (
           <input
             type="text"
-            value={selectedList ?? ''}
             onChange={(e) => {
               const search = e.target.value.trim().toLowerCase();
-              const result = listValue.filter(intern => intern.name.toLowerCase().includes(search));
-              console.log(result)
+              handleSearch(search);
               openDropdown(true);
             }}
-            onFocus={() => openDropdown(true)}
+            onFocus={() => {
+              setFilteredList(listValue);
+              openDropdown(true);
+            }}
             onBlur={() => openDropdown(false)}
             placeholder="Type..."
             className="

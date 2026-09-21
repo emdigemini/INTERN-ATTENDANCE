@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./pages/MainLayout";
 import InternAttendance from "./pages/attendance/InternAttendance";
-import AddIntern from "./pages/admin/AddIntern";
+import Admin from "./pages/admin/Admin";
 import AdminProvider from "./context/AdminProvider";
 import InternProvider from "./context/InternProvider";
 
@@ -13,7 +13,7 @@ const App = () => {
           <Routes>
             <Route element={ <MainLayout /> }>
               <Route path="/" element={<InternAttendance />} />
-              <Route path="/admin" element={<AddIntern />} />
+              <Route path="/admin" element={<Admin />} />
             </Route>
           </Routes>
         </Router>

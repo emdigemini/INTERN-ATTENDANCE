@@ -155,14 +155,14 @@ export const logoutAdmin = async (req, res) => {
 
 export const addNewInterns = async (req, res) => {
   try {
-    const { firstName, lastName, schoolName, requiredHours, companySite } = req.body;
+    const { firstName, lastName, schoolName, requiredHours, companySite, passwordConfirmation } = req.body;
     const adminId = req.admin.id;
 
     const isAdminLogin = await query(
       `SELECT 
         public_id, name, 
         username, role,
-        company_site 
+        company_site, password 
       FROM admins
       WHERE public_id = $1`,
       [adminId]
@@ -172,6 +172,12 @@ export const addNewInterns = async (req, res) => {
       return res.status(401).json({
         message: 'Admin session is invalid or has expired.'
       });
+    }
+
+    const isMatch = bcrypt.compare(passwordConfirmation, isAdminLogin.rows[0].password);
+    
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Error, invalid password.' });
     }
 
     const admin = isAdminLogin.rows[0];

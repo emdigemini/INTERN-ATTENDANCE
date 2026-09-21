@@ -31,6 +31,7 @@ const InternProvider = ({ children }: Props) => {
       formData.append("internId", internId);
       
       const res = await based_url.post('/attendance_cnx/time-in', formData);
+      setSelectedIntern(null);
       toast.success(res.data.message);
     } catch (err: unknown) {
       if (isAxiosError(err)) {
@@ -38,6 +39,7 @@ const InternProvider = ({ children }: Props) => {
       }
     } finally {
       setIsLoading(false);
+      setPhoto(null);
     }
   }
 

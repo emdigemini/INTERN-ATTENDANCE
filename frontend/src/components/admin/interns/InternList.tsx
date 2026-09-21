@@ -7,15 +7,8 @@ import { Pencil } from 'lucide-react';
 import { X } from 'lucide-react';
 import { based_url } from '../../../axios';
 import toast from 'react-hot-toast';
-
-type EditInternType = {
-  internId: string;
-  firstName: string;
-  lastName: string;
-  schoolName: string;
-  requiredHours: number;
-  startedAt: string;
-}
+import IsLoading from '../../IsLoading';
+import type { EditInternType } from '../../..';
 
 const InternList = () => {
   const { admin } = useAdminContext();
@@ -63,15 +56,9 @@ const InternList = () => {
   return (
     <>
       {isLoading && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
-          <div className="flex items-center gap-3 rounded-xl bg-white px-5 py-4 shadow-lg">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-gray-900" />
-
-            <span className="text-sm font-medium text-gray-700">
-              Saving changes...
-            </span>
-          </div>
-        </div>
+        <IsLoading
+          loadingMessage='Saving changes'
+        />
       )}
       {isEdit && editIntern && 
         <EditIntern
@@ -125,6 +112,11 @@ const InternList = () => {
           </div>
 
           <div className="h-170 overflow-y-auto">
+            {filteredList?.length === 0 && (
+              <h2 className="flex min-h-75 items-center justify-center text-xl font-medium text-gray-500">
+                No intern found.
+              </h2>
+            )}
             {filteredList?.map((intern) => (
               <InternListItem
                 key={intern.intern_id}
