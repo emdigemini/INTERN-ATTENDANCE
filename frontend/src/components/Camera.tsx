@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
-import { useInternContext } from "../context/InternContext";
+import { useAttendanceContext } from "../context/AttendanceContext";
 
 const Camera = () => {
-  const { setPhoto } = useInternContext();
+  const { isCamRunning, setPhoto, setIsCamRunning } = useAttendanceContext();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const takePicture = () => {
+    if (!isCamRunning) return;
     const video = videoRef.current;
     const canvas = canvasRef.current;
 
@@ -68,8 +69,10 @@ const Camera = () => {
         if (videoElement) {
           videoElement.srcObject = stream;
         }
+        setIsCamRunning(true);
       } catch (error) {
         console.error("Camera access denied:", error);
+        setIsCamRunning(false);
       }
     };
 
@@ -81,7 +84,7 @@ const Camera = () => {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, [setIsCamRunning]);
 
   return (
     <div

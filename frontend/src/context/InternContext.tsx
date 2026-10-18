@@ -1,22 +1,14 @@
 import { createContext, useContext } from "react";
-import type { InternType, SiteListType, InternWithPagination, DropdownListType, InternStatsType, PhotoDataType, AttendanceStatusType, EditInternType } from "..";
+import type { InternType, SiteListType, InternWithPagination, EditInternType } from "..";
 
 type InternContextType = {
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   interns: InternType[] | [];
   allInterns: InternWithPagination | null;
-  selectedIntern: DropdownListType | null;
-  internStats: InternStatsType | null;
-  photo: PhotoDataType | null;
-  attendanceStatus: AttendanceStatusType | 'time_in';
-  setPhoto: React.Dispatch<React.SetStateAction<PhotoDataType | null>>;
-  timeIn: (internId: string) => Promise<void>;
-  timeOut: (internId: string) => Promise<void>;
   fetchAllInterns: () => Promise<void>;
   selectSite: (site: SiteListType) => void;
   fetchUnfinishedInterns: () => Promise<void>;
-  handleInternSelect: (value: { id: string; name: string }) => void;
   editIntern: EditInternType | null;
   setEditIntern: React.Dispatch<React.SetStateAction<EditInternType | null>>;
 }

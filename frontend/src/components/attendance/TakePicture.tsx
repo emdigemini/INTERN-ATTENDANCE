@@ -1,8 +1,8 @@
-import { useInternContext } from "../../context/InternContext"
+import { useAttendanceContext } from "../../context/AttendanceContext";
 import Camera from "../Camera"
 
 const TakePicture = () => {
-  const { photo } = useInternContext();
+  const { photo } = useAttendanceContext();
 
   return (
     <div className="flex w-full gap-4 px-4 py-6 bg-gray-300">

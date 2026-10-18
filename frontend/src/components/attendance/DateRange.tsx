@@ -1,13 +1,13 @@
 import { ArrowDownToLine } from "lucide-react";
 import { based_url } from "../../axios";
 import { useEffect, useState } from "react";
-import { useInternContext } from "../../context/InternContext";
 import toast from "react-hot-toast";
 import type { AttendanceDataType } from "../..";
 import { handleExportExcel } from "../../utils";
+import { useAttendanceContext } from "../../context/AttendanceContext";
 
 const DateRange = () => {
-  const { selectedIntern } = useInternContext();
+  const { selectedIntern } = useAttendanceContext();
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [attendanceData, setAttendanceData] = useState<AttendanceDataType[] | []>([]);

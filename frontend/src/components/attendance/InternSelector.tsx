@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import CustomDropdown from "../CustomDropdown";
 import { useInternContext } from "../../context/InternContext";
+import { useAttendanceContext } from "../../context/AttendanceContext";
 
 export default function InternSelector() {
-  const { interns, selectedIntern, handleInternSelect } = useInternContext();
+  const { interns } = useInternContext();
+  const { selectedIntern, handleInternSelect } = useAttendanceContext();
   const [open, setOpen] = useState(false);
 
   const handleDropDownOpen = (value: boolean) => {
@@ -43,7 +45,7 @@ export default function InternSelector() {
 }
 
 function TimeSetButton({ selectedIntern }: { selectedIntern: string | null }) {
-  const { attendanceStatus, photo, timeIn, timeOut } = useInternContext();
+  const { attendanceStatus, photo, timeIn, timeOut } = useAttendanceContext();
 
   return (
     <button

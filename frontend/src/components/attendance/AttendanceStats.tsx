@@ -1,8 +1,8 @@
-import { useInternContext } from "../../context/InternContext"
+import { useAttendanceContext } from "../../context/AttendanceContext";
 import { getPossibleEndDate } from "../../utils";
 
 const AttendanceStats = () => {
-  const { internStats } = useInternContext();
+  const { internStats } = useAttendanceContext();
 
   const remainingHours = internStats
   ? Number(
@@ -62,7 +62,7 @@ const AttendanceStats = () => {
         </span>
         <span className="text-sm text-gray-500">
           {internStats
-            ? `${internStats?.required_hours - internStats?.completed_hours} hours`
+            ? `${(internStats?.required_hours - internStats?.completed_hours).toFixed(2)} hours`
             : '—'
           }
         </span>
