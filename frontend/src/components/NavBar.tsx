@@ -1,9 +1,14 @@
 import { Link, useLocation } from "react-router-dom"
 import { useAdminContext } from "../context/AdminContext";
+import IsLoading from "./IsLoading";
 
 const NavBar = () => {
   const pathname = useLocation().pathname;
-  const { admin, logoutAdmin } = useAdminContext();
+  const { isLoading, admin, logoutAdmin } = useAdminContext();
+
+  if (isLoading) {
+    return <IsLoading loadingMessage="Logging in..." />
+  }
 
   return (
     <header className="flex items-center bg-[#003B70] px-4 py-3 shadow-md">
@@ -32,7 +37,7 @@ const NavBar = () => {
           logoutAdmin();
         }}
       >
-        Logout <span className="underline"> {admin && admin.name.toUpperCase()}</span>
+        Logout <span className="underline"> {admin ? admin.name.toUpperCase() : ''}</span>
       </button>
 
       <div className="w-17.5" />

@@ -3,6 +3,7 @@ import { AdminContext } from "./AdminContext";
 import type { Props, AdminType, LoginType, NewInternFormType } from "..";
 import { based_url } from "../axios";
 import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
 
 const AdminProvider = ({ children }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -83,29 +84,48 @@ const AdminProvider = ({ children }: Props) => {
   }
 
   useEffect(() => {
+    if (isAuthenticated && admin) return;
+
+    let cancelled = false;
+
     const checkAuth = async () => {
       setIsLoading(true);
 
       try {
         const res = await based_url.get("/auth/verifying");
-        if (!res.data) {
+
+        if (cancelled) return;
+
+        if (!res.data?.admin) {
           setAdmin(null);
           setIsAuthenticated(false);
+          return;
         }
+
         setAdmin(res.data.admin);
         setIsAuthenticated(true);
       } catch (err: unknown) {
-        console.log(err);
-        setAdmin(null);
-        setIsAuthenticated(false);
+        if (cancelled) return;
+
+        if (isAxiosError(err) && err.response?.status === 401) {
+          setAdmin(null);
+          setIsAuthenticated(false);
+          return;
+        }
+
+        console.error("Authentication error:", err);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
-    }
+    };
 
-      checkAuth();
-  }, []);
+    void checkAuth();
 
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, admin]);
+  
   return (
     <AdminContext.Provider value={{
       isLoading, isAuthenticated, admin,

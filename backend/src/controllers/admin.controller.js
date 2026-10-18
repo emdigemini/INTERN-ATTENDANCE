@@ -62,14 +62,13 @@ export const createAdmin = async  (req, res) => {
 export const loginAdmin = async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log(username, password)
 
     if (!username || !password) {
       return res.status(400).json({ message: 'All fields are required.' });
     }
 
     const isUserExists = await query(
-      `SELECT public_id, username, role, password 
+      `SELECT public_id, username, name, role, password 
       FROM admins
       WHERE username = $1`,
       [username]
@@ -106,7 +105,8 @@ export const loginAdmin = async (req, res) => {
       admin: {
         public_id: admin.public_id,
         username: admin.username,
-        role: admin.role
+        role: admin.role,
+        name: admin.name
       }
     })
   } catch (err) {
