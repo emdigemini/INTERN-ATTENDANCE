@@ -2,11 +2,11 @@ import TakePicture from "../../components/attendance/TakePicture"
 import InternSelector from "../../components/attendance/InternSelector"
 import AttendanceStats from "../../components/attendance/AttendanceStats"
 import DateRange from "../../components/attendance/DateRange"
-import { useInternContext } from "../../context/InternContext"
 import IsLoading from "../../components/IsLoading"
+import { useAttendanceContext } from "../../context/AttendanceContext"
 
 const InternAttendance = () => {
-  const { isLoading } = useInternContext();
+  const { isLoading } = useAttendanceContext();
   return (
     <>
       {isLoading && (

@@ -400,3 +400,61 @@ export const fetchUnfinishedInterns = async (req, res) => {
     res.status(500).json({ message: 'Internal server error.' });
   }
 }
+
+export const addSenior = async (req, res) => {
+  try {
+    const { firstName, lastName, companySite } = req.body;
+
+    if (!firstName || !lastName || !companySite) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    const results = await query(
+      `INSERT INTO seniors
+      (first_name, last_name, company_site)
+      VALUES ($1, $2, $3)
+      RETURNING first_name, last_name`,
+      [firstName, lastName, companySite]
+    );
+
+    const fullName = results.rows[0].first_name + " " + results.rows[0].last_name;
+
+    res.status(200).json({ message: `Successfully added ${fullName}` });
+  } catch (err) {
+    console.log('Error in fetchAllInterns controller: ', err);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+}
+
+export const fetchSeniors = async (req, res) => {
+  try {
+    const adminId = req.admin.id;
+
+    const adminRes = await query(
+      `SELECT public_id, role, company_site
+      FROM admins
+      WHERE public_id = $1`,
+      [adminId]
+    );
+    
+    const admin = adminRes.rows[0];
+    const companySite = admin.company_site; 
+
+    const results = await query(
+      `SELECT 
+        senior_id, first_name, 
+        last_name, company_site
+      FROM seniors
+      WHERE company_site = $1
+      `,
+      [companySite]
+    );
+
+    const seniors = results.rows;
+
+    res.status(200).json({ seniors });
+  } catch (err) {
+    console.log('Error in fetchAllInterns controller: ', err);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+}

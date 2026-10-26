@@ -43,6 +43,13 @@ export interface InternType {
   started_at: string;
 }
 
+export interface SeniorType {
+  senior_id: string;
+  first_name: string;
+  last_name: string;
+  company_site: string;
+}
+
 export interface InternStatsType {
   intern_id: string;
   first_name: string;
@@ -63,7 +70,7 @@ export interface InternWithPagination {
   pagination: PaginationType;
 }
 
-export type SiteListType = 'exxa' | 'terra' | 'gbf' | 'giga';
+export type SiteListType = 'exxa' | 'tera' | 'gbf' | 'giga';
 
 
 export type DropdownListType = {

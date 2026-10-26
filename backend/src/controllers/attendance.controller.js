@@ -182,9 +182,13 @@ export const timeIn = async (req, res) => {
 
 export const timeOut = async (req, res) => {
   try {
-    const { internId } = req.body;
+    const { internId, OTApprover, OTNotes } = req.body;
     const file = req.file
     const filename = `TIME_OUT-${file.originalname}`;
+
+    if (OTApprover && !OTNotes) {
+      return res.status(400).json({ message: 'OT Notes is required.' });
+    }  
 
     const validateError = await validateAttendanceRequest(internId, file);
     if (validateError) {
@@ -203,7 +207,9 @@ export const timeOut = async (req, res) => {
       `UPDATE attendance
       SET 
         time_out = NOW(),
-        time_out_url = $2
+        time_out_url = $2,
+        OTApprover = $3,
+        OTNotes = $4
       WHERE intern_id = $1
         AND time_in IS NOT NULL
         AND time_out IS NULL
@@ -215,7 +221,7 @@ export const timeOut = async (req, res) => {
           )::numeric,
           2
         ) AS consumed_hours`,
-      [internId, imageUrl]
+      [internId, imageUrl, OTApprover, OTNotes]
     );
 
     if (attendance.rows.length === 0) {

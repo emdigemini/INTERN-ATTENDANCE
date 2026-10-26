@@ -10,11 +10,13 @@ const AttendanceProvider = ({ children }: Props) => {
   const [isCamRunning, setIsCamRunning] = useState(false);
   const [photo, setPhoto] = useState<PhotoDataType | null>(null);
   const [selectedIntern, setSelectedIntern] = useState<DropdownListType | null>(null);
+  const [selectedSenior, setSelectedSenior] = useState<DropdownListType | null>(null);
   const [internStats, setInternStats] = useState<InternStatsType | null>(null);
+  const [OTNotes, setOTNotes] = useState<string | null>(null);
 
   const [attendanceStatus, setAttendanceStatus] = useState<AttendanceStatusType | 'time_in'>('time_in');
 
-  const handleInternSelect = ({ id, name }: DropdownListType) => {
+  const handleDropdownSelect = ({ id, name }: DropdownListType) => {
     setSelectedIntern({ id, name });
   }
 
@@ -46,15 +48,29 @@ const AttendanceProvider = ({ children }: Props) => {
       const formData = new FormData(); 
       formData.append("photo", photo.data);
       formData.append("internId", internId);
+
+      if (selectedSenior?.id) {
+        if (!OTNotes?.trim()) {
+          toast.error("OT notes is required.");
+          return;
+        }
+
+        formData.append("OTApprover", selectedSenior.name);
+        formData.append("OTNotes", OTNotes);
+      }
       
       const res = await based_url.patch('/attendance_cnx/time-out', formData);
       toast.success(res.data.message);
+      setSelectedIntern(null);
+      setSelectedSenior(null);
+      setOTNotes(null);
     } catch (err: unknown) {
       if (isAxiosError(err)) {
         toast.error(err.response?.data?.message || 'Something went wrong.');
       }
     } finally {
       setIsLoading(false);
+      setPhoto(null);
     }
   }
 
@@ -101,8 +117,8 @@ const AttendanceProvider = ({ children }: Props) => {
   return (
     <AttendanceContext.Provider value={{
       isLoading, isCamRunning, setIsCamRunning, photo, setPhoto,
-      selectedIntern, setSelectedIntern, 
-      attendanceStatus, internStats, handleInternSelect, timeIn, timeOut
+      selectedIntern, setSelectedIntern, selectedSenior, setSelectedSenior, 
+      setOTNotes, attendanceStatus, internStats, handleDropdownSelect, timeIn, timeOut
     }}>
       {children}
     </AttendanceContext.Provider>

@@ -1,4 +1,5 @@
--- CREATE TYPE site_list AS ENUM ('exxa', 'terra', 'giga', 'gbf');
+-- CREATE TYPE site_list AS ENUM ('exxa', 'tera', 'giga', 'gbf');
+
 -- CREATE TABLE IF NOT EXISTS interns (
 --   id SERIAL PRIMARY KEY,
 --   intern_id UUID DEFAULT gen_random_uuid() UNIQUE,
@@ -14,6 +15,14 @@
 -- ALTER TABLE interns
 -- ALTER COLUMN completed_hours TYPE NUMERIC(10,2);
 
+-- CREATE TABLE IF NOT EXISTS seniors (
+--   id SERIAL PRIMARY KEY,
+--   senior_id UUID DEFAULT gen_random_uuid() UNIQUE,
+--   first_name VARCHAR(255) NOT NULL,
+--   last_name VARCHAR(255) NOT NULL,
+--   company_site site_list NOT NULL
+-- );
+
 -- CREATE TABLE IF NOT EXISTS attendance (
 --   id SERIAL PRIMARY KEY,
 --   intern_id UUID NOT NULL REFERENCES interns(intern_id) ON DELETE CASCADE,
@@ -22,6 +31,9 @@
 --   time_in TIMESTAMPTZ,
 --   time_out TIMESTAMPTZ
 -- );
+
+-- ALTER TABLE attendance
+-- ADD COLUMN OTApprover VARCHAR(256) DEFAULT '';
 
 -- CREATE TYPE admin_type AS ENUM ('super_admin', 'admin');
 -- CREATE TABLE IF NOT EXISTS admins (

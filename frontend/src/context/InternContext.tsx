@@ -1,10 +1,11 @@
 import { createContext, useContext } from "react";
-import type { InternType, SiteListType, InternWithPagination, EditInternType } from "..";
+import type { InternType, SiteListType, InternWithPagination, EditInternType, SeniorType } from "..";
 
 type InternContextType = {
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   interns: InternType[] | [];
+  seniors: SeniorType[] | [];
   allInterns: InternWithPagination | null;
   fetchAllInterns: () => Promise<void>;
   selectSite: (site: SiteListType) => void;

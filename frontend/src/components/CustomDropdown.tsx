@@ -40,12 +40,9 @@ const CustomDropdown = ({
     <div className="relative w-full">
       <div
         className="
-          w-full
-          rounded-md
+          w-full rounded-md
           border border-gray-300
-          px-4 py-3
-          text-xl
-          transition
+          px-4 py-3 text-xl transition
           focus-within:border-[#0072CE]
           focus-within:ring-2
           focus-within:ring-[#0072CE]/20
